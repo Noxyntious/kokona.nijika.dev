@@ -5,6 +5,12 @@
         href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300&display=swap"
         rel="stylesheet"
     />
+    <meta property="og:title" content="Kokona" />
+    <meta
+        property="og:description"
+        content="A simple text editor written in egui and Rust."
+    />
+    <meta property="og:type" content="website" />
     <style>
         html {
             scroll-behavior: smooth; /* Enable smooth scrolling */
@@ -173,6 +179,21 @@
                     onclick="downloadFile('kokona')"
                 >
                     Linux
+                </button>
+            </div>
+            <p>Alternatively...</p>
+            <div class="button-container">
+                <button
+                    class="button primary"
+                    onclick="window.location.href='https://github.com/Noxyntious/kokona/actions'"
+                >
+                    Debug downloads for all platforms
+                </button>
+                <button
+                    class="button primary"
+                    onclick="alert('WHAT? HELP ME!\nThese builds are compiled by GitHub Actions right after every commit,\ngiving you the most up to date version of Kokona possible.\nTo download (you MUST be signed into a GitHub account):\n- Click on the latest action run\n- Scroll down\n- Select the build for your platform\n- Download\n- Done!')"
+                >
+                    ?
                 </button>
             </div>
         </div>
