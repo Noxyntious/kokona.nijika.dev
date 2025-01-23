@@ -1,0 +1,270 @@
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300&display=swap"
+        rel="stylesheet"
+    />
+    <style>
+        html {
+            scroll-behavior: smooth; /* Enable smooth scrolling */
+        }
+        body {
+            margin: 0;
+            font-family: "Ubuntu", sans-serif;
+            min-height: 100vh; /* Ensure full viewport height */
+            background-color: #333;
+            color: white;
+        }
+
+        .navbar {
+            background-color: #333;
+            padding: 15px;
+            position: fixed; /* Fix navbar at top */
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .content {
+            text-align: center;
+            min-height: 100vh; /* Full viewport height */
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* Vertical center */
+            align-items: center; /* Horizontal center */
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 72px;
+            margin: 0;
+        }
+        h2 {
+            font-size: 60px;
+            margin: 0;
+        }
+
+        .description {
+            font-size: 18px;
+            color: white;
+            margin: 20px 0;
+            max-width: 600px;
+        }
+
+        .button {
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .primary {
+            background-color: #666;
+            color: white;
+        }
+
+        .secondary {
+            background-color: #666;
+            color: white;
+        }
+
+        .second-section {
+            min-height: 100vh;
+            background-color: #222;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .button-container {
+            display: flex;
+            flex-direction: row;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <h1>Kokona</h1>
+        <p class="description">
+            A simple multipurpose text editor written 100% in Rust using the
+            egui framework.
+        </p>
+        <div id="version-tag" class="version-tag">Loading version...</div>
+
+        <script>
+            async function fetchLatestVersion() {
+                try {
+                    const response = await fetch(
+                        "https://api.github.com/repos/Noxyntious/kokona/releases/latest",
+                    );
+                    const data = await response.json();
+
+                    if (data.tag_name) {
+                        document.getElementById("version-tag").textContent =
+                            `Latest version: ${data.tag_name}`;
+                    } else {
+                        document.getElementById("version-tag").textContent =
+                            "No version found";
+                    }
+                } catch (error) {
+                    console.error("Error fetching version:", error);
+                    document.getElementById("version-tag").textContent =
+                        "Error loading version";
+                }
+            }
+            fetchLatestVersion();
+        </script>
+        <div class="button-container">
+            <button
+                class="button primary"
+                onclick="window.location.href='#download'"
+            >
+                Download
+            </button>
+            <button
+                class="button secondary"
+                onclick="window.location.href='https://github.com/Noxyntious/kokona'"
+            >
+                GitHub
+            </button>
+        </div>
+    </div>
+
+    <div class="second-section" id="download">
+        <h2>Download</h2>
+        <div
+            class="button-container"
+            style="flex-direction: column; align-items: center; gap: 20px"
+        >
+            <button
+                class="button primary"
+                id="auto-dl"
+                style="display: none"
+                onclick="downloadForPlatform()"
+            >
+                Download for <span id="platform-name"></span>
+            </button>
+            <p>Other downloads:</p>
+            <div class="button-container" style="gap: 10px">
+                <button
+                    class="button primary"
+                    id="windows-dl"
+                    onclick="downloadFile('kokona.exe')"
+                >
+                    Windows
+                </button>
+                <button
+                    class="button primary"
+                    id="macos-dl"
+                    onclick="downloadFile('kokona-darwin-aarch64.zip')"
+                >
+                    macOS
+                </button>
+                <button
+                    class="button primary"
+                    id="linux-dl"
+                    onclick="downloadFile('kokona')"
+                >
+                    Linux
+                </button>
+            </div>
+        </div>
+        <script>
+            function detectPlatform() {
+                const platform = window.navigator.platform.toLowerCase();
+                const autoDl = document.getElementById("auto-dl");
+                const platformName = document.getElementById("platform-name");
+
+                if (platform.includes("win")) {
+                    autoDl.onclick = () => downloadFile("kokona.exe");
+                    platformName.textContent = "Windows";
+                } else if (platform.includes("mac")) {
+                    autoDl.onclick = () =>
+                        downloadFile("kokona-darwin-aarch64.zip");
+                    platformName.textContent = "macOS";
+                } else if (platform.includes("linux")) {
+                    autoDl.onclick = () => downloadFile("kokona");
+                    platformName.textContent = "Linux";
+                }
+
+                autoDl.style.display = "block";
+            }
+            detectPlatform();
+        </script>
+    </div>
+
+    <script>
+        let latestRelease = null;
+
+        async function fetchLatestVersion() {
+            try {
+                const response = await fetch(
+                    "https://api.github.com/repos/Noxyntious/kokona/releases/latest",
+                );
+                latestRelease = await response.json();
+
+                if (latestRelease.tag_name) {
+                    document.getElementById("version-tag").textContent =
+                        `Version: ${latestRelease.tag_name}`;
+
+                    // Enable buttons if assets are available
+                    latestRelease.assets.forEach((asset) => {
+                        if (asset.name === "kokona.exe") {
+                            document.getElementById("windows-dl").title =
+                                `Size: ${formatBytes(asset.size)}`;
+                        }
+                        if (asset.name === "kokona-darwin-aarch64.zip") {
+                            document.getElementById("macos-dl").title =
+                                `Size: ${formatBytes(asset.size)}`;
+                        }
+                        if (asset.name === "kokona") {
+                            document.getElementById("linux-dl").title =
+                                `Size: ${formatBytes(asset.size)}`;
+                        }
+                    });
+                } else {
+                    document.getElementById("version-tag").textContent =
+                        "No version found";
+                }
+            } catch (error) {
+                console.error("Error fetching version:", error);
+                document.getElementById("version-tag").textContent =
+                    "Error loading version";
+            }
+        }
+
+        function formatBytes(bytes) {
+            if (bytes === 0) return "0 Bytes";
+            const k = 1024;
+            const sizes = ["Bytes", "KB", "MB", "GB"];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return (
+                parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i]
+            );
+        }
+
+        function downloadFile(fileName) {
+            if (!latestRelease) {
+                alert("Please wait for release information to load");
+                return;
+            }
+
+            const asset = latestRelease.assets.find((a) => a.name === fileName);
+            if (asset) {
+                window.location.href = asset.browser_download_url;
+            } else {
+                alert(`${fileName} not found in the latest release`);
+            }
+        }
+
+        // Call the function when the page loads
+        fetchLatestVersion();
+    </script>
+</body>
