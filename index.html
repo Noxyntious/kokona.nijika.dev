@@ -230,6 +230,8 @@ $ cargo install --git https://github.com/Noxyntious/kokona</pre
                 } else if (platform.includes("linux")) {
                     autoDl.onclick = () => downloadFile("kokona");
                     platformName.textContent = "Linux";
+                } else {
+                    platformName.textContent = "Unsupported";
                 }
 
                 autoDl.style.display = "block";
